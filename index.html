@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>一个小小的邀请 ♡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Caveat:wght@500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --blush-bg-1:#fff6f5;
+    --blush-bg-2:#ffe3ec;
+    --blush-bg-3:#ffd0e0;
+    --card:#fffdfc;
+    --ink:#7a4a55;
+    --ink-soft:#b07d88;
+    --candy:#ff6f9c;
+    --candy-deep:#ff4d85;
+    --candy-soft:#ffd9e6;
+    --gold:#ffd36e;
+    --ring:#ffc0d6;
+    --shadow:rgba(255,99,150,.28);
+    --paper-line:#ffe0ea;
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;margin:0;}
+  body{
+    font-family:"Noto Sans SC",system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(120% 80% at 50% -10%, var(--blush-bg-1) 0%, var(--blush-bg-2) 55%, var(--blush-bg-3) 100%) fixed;
+    min-height:100dvh;
+    display:flex;flex-direction:column;align-items:center;justify-content:safe center;
+    overflow-x:hidden;overflow-y:auto;position:relative;
+    padding:18px 0;
+  }
+
+  /* grain / texture overlay */
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:50;mix-blend-mode:multiply;opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* floating hearts background */
+  #hearts{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .bg-heart{position:absolute;bottom:-60px;font-size:26px;opacity:.55;animation:floatUp linear infinite;filter:saturate(1.1);will-change:transform;}
+  @keyframes floatUp{
+    0%{transform:translateY(0) translateX(0) rotate(0);opacity:0;}
+    12%{opacity:.6;}
+    50%{transform:translateY(-55vh) translateX(var(--drift)) rotate(18deg);}
+    88%{opacity:.5;}
+    100%{transform:translateY(-110vh) translateX(calc(var(--drift)*-1)) rotate(-12deg);opacity:0;}
+  }
+
+  /* stage / card */
+  .stage{position:relative;z-index:2;width:min(92vw,400px);margin:auto;}
+  .card{
+    position:absolute;inset:0;margin:auto;
+    background:var(--card);
+    border:2.5px solid var(--ring);
+    border-radius:30px;
+    padding:30px 26px 32px;
+    box-shadow:0 22px 48px -18px var(--shadow), 0 4px 0 #ffe6ef, inset 0 0 0 6px #fffafc;
+    text-align:center;
+    opacity:0;transform:translateY(22px) scale(.96);pointer-events:none;
+    transition:opacity .5s ease, transform .5s cubic-bezier(.2,.9,.25,1.2);
+    background-image:repeating-linear-gradient(transparent 0 33px, var(--paper-line) 33px 34px);
+    background-position:0 92px;
+  }
+  .card.active{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;position:relative;}
+
+  /* the gif character */
+  .pet{width:clamp(150px,46vw,184px);height:clamp(150px,46vw,184px);object-fit:contain;margin:0 auto 8px;display:block;
+    filter:drop-shadow(0 10px 12px rgba(255,90,140,.28));animation:bob 3s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-1deg);}50%{transform:translateY(-8px) rotate(1deg);}}
+
+  .eng{font-family:"Caveat",cursive;color:var(--candy-deep);font-weight:700;font-size:1.5rem;line-height:1;margin:2px 0 2px;letter-spacing:.5px;}
+  h1{font-family:"ZCOOL KuaiLe",cursive;font-weight:400;color:var(--ink);font-size:1.62rem;line-height:1.35;margin:.2em 0 .25em;}
+  .sub{font-size:.96rem;color:var(--ink-soft);margin:0 0 18px;line-height:1.5;}
+
+  /* buttons */
+  .btn{
+    font-family:"ZCOOL KuaiLe",cursive;font-size:1.18rem;border:none;cursor:pointer;
+    color:#fff;background:linear-gradient(180deg,#ff85ad,var(--candy-deep));
+    padding:13px 30px;border-radius:999px;
+    box-shadow:0 8px 0 #e23a72, 0 14px 22px -8px var(--shadow);
+    transition:transform .12s, box-shadow .12s, filter .2s;letter-spacing:1px;
+  }
+  .btn:active{transform:translateY(5px);box-shadow:0 3px 0 #e23a72, 0 8px 14px -8px var(--shadow);}
+  .btn:hover{filter:brightness(1.04);}
+  .btn.ghost{background:#fff;color:var(--candy-deep);box-shadow:0 6px 0 var(--candy-soft);border:2px solid var(--ring);}
+
+  .yesno{position:relative;display:flex;gap:14px;justify-content:center;align-items:center;min-height:64px;margin-top:6px;}
+  #noBtn{background:linear-gradient(180deg,#cfd8e3,#9aa7b8);box-shadow:0 7px 0 #7d8b9e;color:#fff;font-size:1.02rem;padding:11px 24px;}
+  #noBtn.flee{position:fixed;z-index:30;transition:left .28s cubic-bezier(.3,1.4,.5,1),top .28s cubic-bezier(.3,1.4,.5,1);}
+
+  /* choice grid */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:6px 0 18px;}
+  .grid.two{grid-template-columns:repeat(3,1fr);}
+  .chip{
+    background:#fff;border:2.5px solid var(--ring);border-radius:20px;padding:14px 6px 10px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:5px;
+    transition:transform .15s, border-color .2s, background .2s, box-shadow .2s;box-shadow:0 4px 0 #ffe6ef;
+  }
+  .chip:hover{transform:translateY(-3px) rotate(-1.5deg);}
+  .chip .emo{font-size:2rem;line-height:1;}
+  .chip .lbl{font-size:.82rem;color:var(--ink-soft);font-weight:500;}
+  .chip.sel{background:var(--candy-soft);border-color:var(--candy-deep);box-shadow:0 4px 0 var(--candy-deep);transform:translateY(-2px) scale(1.03);}
+  .chip.sel .lbl{color:var(--candy-deep);font-weight:700;}
+
+  /* date/time */
+  .field{text-align:left;margin:0 0 14px;}
+  .field label{font-family:"Caveat",cursive;font-weight:700;color:var(--candy-deep);font-size:1.25rem;display:block;margin-bottom:5px;}
+  .field input{
+    width:100%;font-family:"Noto Sans SC",sans-serif;font-size:1.05rem;color:var(--ink);
+    border:2.5px solid var(--ring);border-radius:16px;padding:12px 14px;background:#fffdfd;outline:none;
+    transition:border-color .2s,box-shadow .2s;
+  }
+  .field input:focus{border-color:var(--candy-deep);box-shadow:0 0 0 4px var(--candy-soft);}
+
+  /* summary card */
+  .ticket{
+    background:linear-gradient(180deg,#fff,#fff4f8);border:2.5px dashed var(--candy);border-radius:22px;
+    padding:16px 18px;margin:4px 0 18px;text-align:left;position:relative;
+  }
+  .ticket .row{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:1.02rem;}
+  .ticket .row+.row{border-top:1.5px dotted var(--ring);}
+  .ticket .row .k{font-family:"ZCOOL KuaiLe",cursive;color:var(--ink-soft);min-width:54px;font-size:.98rem;}
+  .ticket .row .v{font-weight:700;color:var(--ink);}
+  .ticket .row .v .big{font-size:1.25rem;margin-right:4px;}
+  .stamp{position:absolute;top:-14px;right:-10px;background:var(--candy-deep);color:#fff;font-family:"ZCOOL KuaiLe",cursive;
+    font-size:.85rem;padding:6px 12px;border-radius:999px;transform:rotate(8deg);box-shadow:0 6px 12px -4px var(--shadow);}
+
+  .hint{font-size:.82rem;color:var(--ink-soft);margin-top:8px;opacity:.85;}
+  .card.capturing .no-shot{display:none!important;}
+  .card.capturing{padding-bottom:30px;}
+  .progress{display:flex;gap:6px;justify-content:center;margin-top:18px;}
+  .progress i{width:7px;height:7px;border-radius:50%;background:var(--candy-soft);transition:.3s;}
+  .progress i.on{background:var(--candy-deep);transform:scale(1.25);}
+
+  .shake{animation:shake .4s;}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+
+  @media(max-width:400px){
+    .card{padding:26px 18px 28px;border-radius:26px;}
+    h1{font-size:1.46rem;}
+    .sub{font-size:.9rem;}
+    .grid{gap:9px;}
+    .chip{padding:12px 4px 8px;border-radius:17px;}
+    .chip .emo{font-size:1.85rem;}
+    .chip .lbl{font-size:.76rem;}
+    .btn{font-size:1.08rem;padding:12px 26px;}
+  }
+  @media(max-height:680px){
+    .pet{width:clamp(118px,32vh,150px);height:clamp(118px,32vh,150px);margin-bottom:4px;}
+    .card{padding-top:22px;padding-bottom:24px;}
+  }
+</style>
+</head>
+<body>
+<div id="hearts"></div>
+
+<div class="stage" id="stage">
+
+  <!-- STEP 1 — invite -->
+  <section class="card active" data-step="1">
+    <img class="pet" src="penguin-cry.gif" alt="哭哭" />
+    <div class="eng">be my date?</div>
+    <h1>愿意和我去约个会吗?🥺</h1>
+    <p class="sub">求你了…就一次嘛，我准备了好多惊喜</p>
+    <div class="yesno" id="yesno">
+      <button class="btn" id="yesBtn">好呀 ❤️</button>
+      <button class="btn" id="noBtn">不要</button>
+    </div>
+  </section>
+
+  <!-- STEP 2 — they said yes -->
+  <section class="card" data-step="2">
+    <img class="pet" src="finn-yay.gif" alt="开心" />
+    <div class="eng">you said yes!!</div>
+    <h1>你居然真的答应了?!🥹</h1>
+    <p class="sub">我都做好被拒绝的准备了…<br/>结果你说好——太开心啦!</p>
+    <button class="btn" data-next>那继续呀 💖</button>
+  </section>
+
+  <!-- STEP 3 — activity -->
+  <section class="card" data-step="3">
+    <div class="eng">what's your vibe?</div>
+    <h1>想一起做点什么呢?</h1>
+    <p class="sub">选一个你最想去的 ✦</p>
+    <div class="grid" id="actGrid"></div>
+    <button class="btn ghost" data-next data-need="act" disabled>先选一个 →</button>
+  </section>
+
+  <!-- STEP 4 — food -->
+  <section class="card" data-step="4">
+    <div class="eng">what are we feelin'?</div>
+    <h1>那…想吃点什么?😋</h1>
+    <p class="sub">填饱肚子才有力气约会 ✦</p>
+    <div class="grid" id="foodGrid"></div>
+    <button class="btn ghost" data-next data-need="food" disabled>先选一个 →</button>
+  </section>
+
+  <!-- STEP 5 — date & time -->
+  <section class="card" data-step="5">
+    <div class="eng">when are you free?</div>
+    <h1>哪天你有空呀?📅</h1>
+    <p class="sub">挑个好日子，我空出一整天给你</p>
+    <div class="field">
+      <label>选个日期</label>
+      <input type="date" id="dateIn" />
+    </div>
+    <div class="field">
+      <label>选个时间</label>
+      <input type="time" id="timeIn" value="18:00" />
+    </div>
+    <button class="btn" data-next data-need="when" disabled>就这天! ♡</button>
+  </section>
+
+  <!-- STEP 6 — final ticket -->
+  <section class="card" data-step="6">
+    <img class="pet" src="bojji-shy.gif" alt="害羞" />
+    <div class="eng">it's a date ♡</div>
+    <h1>那就这么说定啦 💕</h1>
+    <p class="sub">到点我来接你，不准放鸽子哦 🚗💨</p>
+    <div class="ticket" id="ticket">
+      <div class="stamp">已约定 ♡</div>
+      <div class="row"><span class="k">做什么</span><span class="v" id="sumAct">—</span></div>
+      <div class="row"><span class="k">吃什么</span><span class="v" id="sumFood">—</span></div>
+      <div class="row"><span class="k">哪一天</span><span class="v" id="sumDate">—</span></div>
+      <div class="row"><span class="k">几点见</span><span class="v" id="sumTime">—</span></div>
+    </div>
+    <button class="btn no-shot" id="saveBtn" style="margin-top:6px">保存约会卡 📸</button>
+    <p class="hint no-shot">保存后发给我，就当我们的小约定啦 💌</p>
+  </section>
+
+  <div class="progress" id="dots"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+(function(){
+  /* ---------- floating hearts ---------- */
+  const palette=["#ff6f9c","#ff97b8","#ffb3cb","#ff5d8f","#ffc1d6","#ff85ad","#ffa6c9"];
+  const hearts=document.getElementById("hearts");
+  function spawnHeart(startInView){
+    const h=document.createElement("div");
+    h.className="bg-heart";h.textContent="♥";
+    const size=14+Math.random()*28;
+    h.style.left=Math.random()*100+"vw";
+    h.style.fontSize=size+"px";
+    h.style.color=palette[(Math.random()*palette.length)|0];
+    h.style.setProperty("--drift",(Math.random()*120-60)+"px");
+    const dur=7+Math.random()*7;
+    h.style.animationDuration=dur+"s";
+    h.style.opacity=.45+Math.random()*.4;
+    // stagger some hearts so the screen starts already full, not empty
+    if(startInView) h.style.animationDelay=(-Math.random()*dur)+"s";
+    hearts.appendChild(h);
+    setTimeout(()=>h.remove(),dur*1000);
+  }
+  // fill the whole screen immediately so it's never empty
+  for(let i=0;i<32;i++) spawnHeart(true);
+  // then keep a steady stream coming
+  setInterval(spawnHeart,300);
+
+  function burst(x,y,n){
+    for(let i=0;i<n;i++){
+      const h=document.createElement("div");
+      h.textContent="❤";h.style.cssText=`position:fixed;left:${x}px;top:${y}px;z-index:60;pointer-events:none;font-size:${14+Math.random()*18}px;color:${palette[(Math.random()*palette.length)|0]};`;
+      document.body.appendChild(h);
+      const ang=Math.random()*Math.PI*2, dist=60+Math.random()*150;
+      const dx=Math.cos(ang)*dist, dy=Math.sin(ang)*dist-60;
+      h.animate([{transform:"translate(0,0) scale(.4)",opacity:1},
+                 {transform:`translate(${dx}px,${dy}px) scale(1.1)`,opacity:0}],
+                {duration:900+Math.random()*500,easing:"cubic-bezier(.2,.7,.3,1)"});
+      setTimeout(()=>h.remove(),1500);
+    }
+  }
+
+  /* ---------- state & steps ---------- */
+  const state={act:null,food:null,when:false};
+  const cards=[...document.querySelectorAll(".card")];
+  const dots=document.getElementById("dots");
+  cards.forEach((_,i)=>{const d=document.createElement("i");if(i===0)d.className="on";dots.appendChild(d);});
+  let cur=1;
+  function go(step){
+    cards.forEach(c=>c.classList.toggle("active",+c.dataset.step===step));
+    [...dots.children].forEach((d,i)=>d.classList.toggle("on",i===step-1));
+    cur=step;
+    if(step===6) renderTicket();
+    window.scrollTo(0,0);
+  }
+  document.querySelectorAll("[data-next]").forEach(b=>{
+    b.addEventListener("click",e=>{
+      const need=b.dataset.need;
+      if(need && !( need==="when"? state.when : state[need])){ b.classList.add("shake");setTimeout(()=>b.classList.remove("shake"),420);return;}
+      const r=b.getBoundingClientRect();burst(r.left+r.width/2,r.top,10);
+      go(cur+1);
+    });
+  });
+
+  /* ---------- step1: yes / fleeing no ---------- */
+  const yesBtn=document.getElementById("yesBtn");
+  const noBtn=document.getElementById("noBtn");
+  let yesScale=1, fled=0;
+  const taunts=["诶 点不到吧 😤","它躲开啦 😏","你是抓不到的 🙈","放弃吧~ 点「好呀」💗","跑得比你快哦 🏃💨","认命吧 这题没有别的答案 😝"];
+
+  // each click teleports the NO button somewhere new — you can never land on it
+  function dodge(){
+    fled++;
+    noBtn.classList.add("flee");
+    const bw=noBtn.offsetWidth, bh=noBtn.offsetHeight, pad=12;
+    const x=pad+Math.random()*(Math.max(0,window.innerWidth-bw-pad*2));
+    const y=pad+Math.random()*(Math.max(0,window.innerHeight-bh-pad*2));
+    noBtn.style.left=x+"px";
+    noBtn.style.top=y+"px";
+    yesScale=Math.min(yesScale+0.10,2.0);
+    yesBtn.style.transform=`scale(${yesScale})`;
+    const s=document.querySelector('.card[data-step="1"] .sub');
+    if(s) s.textContent=taunts[Math.min(fled-1,taunts.length-1)];
+  }
+  // it stays put next to「好呀」until you actually try to click it
+  noBtn.addEventListener("click",e=>{e.preventDefault();dodge();});
+  noBtn.addEventListener("touchstart",e=>{e.preventDefault();dodge();},{passive:false});
+
+  yesBtn.addEventListener("click",e=>{
+    const r=yesBtn.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,26);
+    noBtn.classList.remove("flee");noBtn.style.cssText="";
+    setTimeout(()=>go(2),260);
+  });
+
+  /* ---------- choice grids ---------- */
+  const activities=[["⛳","打高尔夫"],["🚶","出门散步"],["🎬","看电影"],["💃","去跳舞"],["🎢","逛游乐园"],["🏝️","去海边"]];
+  const foods=[["🍔","汉堡"],["🍣","寿司"],["🍜","拉面"],["🌮","塔可"],["🍕","披萨"],["🍢","路边摊"]];
+  function buildGrid(el,items,key,btn){
+    items.forEach(([emo,lbl])=>{
+      const c=document.createElement("div");c.className="chip";
+      c.innerHTML=`<span class="emo">${emo}</span><span class="lbl">${lbl}</span>`;
+      c.addEventListener("click",()=>{
+        el.querySelectorAll(".chip").forEach(x=>x.classList.remove("sel"));
+        c.classList.add("sel");
+        state[key]={emo,lbl};
+        btn.disabled=false;btn.textContent="下一步 →";
+        const r=c.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,6);
+      });
+      el.appendChild(c);
+    });
+  }
+  buildGrid(document.getElementById("actGrid"),activities,"act",document.querySelector('[data-need="act"]'));
+  buildGrid(document.getElementById("foodGrid"),foods,"food",document.querySelector('[data-need="food"]'));
+
+  /* ---------- date & time ---------- */
+  const dateIn=document.getElementById("dateIn");
+  const timeIn=document.getElementById("timeIn");
+  const whenBtn=document.querySelector('[data-need="when"]');
+  function checkWhen(){state.when=!!(dateIn.value&&timeIn.value);whenBtn.disabled=!state.when;}
+  dateIn.addEventListener("change",checkWhen);
+  timeIn.addEventListener("change",checkWhen);
+
+  /* ---------- final ticket ---------- */
+  const W=["日","一","二","三","四","五","六"];
+  function renderTicket(){
+    document.getElementById("sumAct").innerHTML=state.act?`<span class="big">${state.act.emo}</span>${state.act.lbl}`:"—";
+    document.getElementById("sumFood").innerHTML=state.food?`<span class="big">${state.food.emo}</span>${state.food.lbl}`:"—";
+    if(dateIn.value){
+      const d=new Date(dateIn.value+"T00:00");
+      document.getElementById("sumDate").textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 · 周${W[d.getDay()]}`;
+    }
+    if(timeIn.value){
+      let[h,m]=timeIn.value.split(":").map(Number);
+      const ap=h<12?"上午":(h<18?"下午":"晚上");
+      let hh=h%12;if(hh===0)hh=12;
+      document.getElementById("sumTime").textContent=`${ap} ${hh}:${String(m).padStart(2,"0")}`;
+    }
+    setTimeout(()=>burst(window.innerWidth/2,window.innerHeight*0.4,40),200);
+  }
+
+  /* ---------- save the date-card as an image ---------- */
+  const saveBtn=document.getElementById("saveBtn");
+  saveBtn.addEventListener("click",async()=>{
+    if(typeof html2canvas!=="function"){alert("图片库还没加载好，截个屏也一样哦 📱");return;}
+    const card=document.querySelector('.card[data-step="6"]');
+    const oldText=saveBtn.textContent;
+    saveBtn.textContent="生成中… ⏳";saveBtn.disabled=true;
+    card.classList.add("capturing");
+    try{
+      const canvas=await html2canvas(card,{scale:2,backgroundColor:"#ffe6ef",useCORS:true,logging:false});
+      card.classList.remove("capturing");
+      const finish=()=>{saveBtn.textContent="已保存 ✅ 再存一张?";saveBtn.disabled=false;};
+      if(canvas.toBlob){
+        canvas.toBlob(blob=>{
+          const url=URL.createObjectURL(blob);
+          const a=document.createElement("a");
+          a.href=url;a.download="我们的约会卡.png";document.body.appendChild(a);a.click();a.remove();
+          setTimeout(()=>URL.revokeObjectURL(url),4000);finish();
+        },"image/png");
+      }else{
+        const a=document.createElement("a");a.href=canvas.toDataURL("image/png");
+        a.download="我们的约会卡.png";document.body.appendChild(a);a.click();a.remove();finish();
+      }
+    }catch(err){
+      card.classList.remove("capturing");
+      saveBtn.textContent=oldText;saveBtn.disabled=false;
+      alert("保存失败了，直接截屏也一样可爱哦 📱");
+    }
+  });
+})();
+</script>
+</body>
+</html>
